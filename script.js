@@ -23,74 +23,102 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Update Cart Display with Delete Buttons and Quantity Controls
-function updateCart() {
-    cartItemsContainer.innerHTML = '';
-    let total = 0;
-    let itemCount = 0;
-
-    cart.forEach((item, index) => {
-        itemCount += item.quantity;
-        const itemElement = document.createElement('div');
-        itemElement.classList.add('cart-item');
-        itemElement.innerHTML = `
-            <div class="cart-item-content">
-                <div class="cart-item-info">
-                    <span class="cart-item-name">${item.name}</span>
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" data-index="${index}" data-action="decrease">−</button>
-                        <span class="cart-item-quantity">${item.quantity}</span>
-                        <button class="quantity-btn" data-index="${index}" data-action="increase">+</button>
+    function updateCart() {
+        cartItemsContainer.innerHTML = '';
+        let total = 0;
+        let itemCount = 0;
+    
+        cart.forEach((item, index) => {
+            itemCount += item.quantity;
+            const itemElement = document.createElement('div');
+            itemElement.classList.add('cart-item');
+            itemElement.innerHTML = `
+                <div class="cart-item-content">
+                    <div class="cart-item-info">
+                        <span class="cart-item-name">${item.name}</span>
+                        <div class="quantity-controls">
+                            <button class="quantity-btn" data-index="${index}" data-action="decrease">−</button>
+                            <span class="cart-item-quantity">${item.quantity}</span>
+                            <button class="quantity-btn" data-index="${index}" data-action="increase">+</button>
+                        </div>
+                    </div>
+                    <div class="cart-item-controls">
+                        <span class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</span>
+                        <button class="delete-item" data-index="${index}">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-                <div class="cart-item-controls">
-                    <span class="cart-item-price">$${(item.price * item.quantity).toFixed(2)}</span>
-                    <button class="delete-item" data-index="${index}">
-                        <svg xmlns="http://www.w3.org/2000/svg" class="delete-icon" viewBox="0 0 20 20" fill="currentColor">
-                            <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"/>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        `;
-        cartItemsContainer.appendChild(itemElement);
-        total += item.price * item.quantity;
+            `;
+            cartItemsContainer.appendChild(itemElement);
+            total += item.price * item.quantity;
+        });
+    
+        // Update total and cart counter
+        totalPriceElement.textContent = `Total: $${total.toFixed(2)}`;
+        const cartCounter = document.querySelector('.cart-counter');
+        cartCounter.textContent = itemCount;
+        cartCounter.style.display = itemCount > 0 ? 'block' : 'none';
+    }
+    
+    // Modified event listeners with propagation stopping
+    cartItemsContainer.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent event bubbling
+        
+        // Handle quantity controls
+        const quantityBtn = e.target.closest('.quantity-btn');
+        if (quantityBtn) {
+            const index = quantityBtn.dataset.index;
+            const action = quantityBtn.dataset.action;
+            
+            if (index >= 0 && cart[index]) {
+                if (action === 'increase') {
+                    cart[index].quantity++;
+                    updateCart();
+                } else if (action === 'decrease') {
+                    if (cart[index].quantity > 1) {
+                        cart[index].quantity--;
+                    } else {
+                        cart.splice(index, 1);
+                    }
+                    updateCart();
+                }
+            }
+            return;
+        }
+    
+        // Handle delete items
+        const deleteBtn = e.target.closest('.delete-item');
+        if (deleteBtn) {
+            const index = deleteBtn.dataset.index;
+            cart.splice(index, 1);
+            updateCart();
+            
+            // Explicitly keep cart open
+            if (cartModal.classList.contains('hidden')) {
+                cartModal.classList.remove('hidden');
+            }
+        }
     });
 
-    // Update total and cart counter
-    totalPriceElement.textContent = `Total: $${total.toFixed(2)}`;
-    const cartCounter = document.querySelector('.cart-counter');
-    cartCounter.textContent = itemCount;
-    cartCounter.style.display = itemCount > 0 ? 'block' : 'none';
-}
-
-// Add quantity control event listener
+    // Delete Item Functionality
 cartItemsContainer.addEventListener('click', (e) => {
-    const index = e.target.closest('button')?.dataset?.index;
-    const action = e.target.closest('button')?.dataset?.action;
-    
-    if (index >= 0 && cart[index]) {
-        if (action === 'increase') {
-            cart[index].quantity++;
-            updateCart();
-        } else if (action === 'decrease') {
-            if (cart[index].quantity > 1) {
-                cart[index].quantity--;
-            } else {
-                cart.splice(index, 1);
-            }
-            updateCart();
+    if (e.target.closest('.delete-item')) {
+        // Prevent event propagation
+        e.stopPropagation();
+        
+        const index = e.target.closest('.delete-item').dataset.index;
+        cart.splice(index, 1);
+        updateCart();
+        
+        // Keep cart open after deletion
+        if (cartModal.classList.contains('hidden')) {
+            cartModal.classList.remove('hidden');
         }
     }
 });
-
-    // Delete Item Functionality
-    cartItemsContainer.addEventListener('click', (e) => {
-        if (e.target.closest('.delete-item')) {
-            const index = e.target.closest('.delete-item').dataset.index;
-            cart.splice(index, 1);
-            updateCart();
-        }
-    });
 
     // Checkout Function
     function checkout() {
