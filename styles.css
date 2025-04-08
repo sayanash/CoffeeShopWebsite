@@ -218,18 +218,19 @@ nav ul li a:hover {
 /* Cart Counter Badge */
 .cart-counter {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: 40px;
+    right: 115px;
     background: #7B341E;
     color: white;
     border-radius: 50%;
-    width: 20px;
-    height: 20px;
+    width: 15px;
+    height: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 0.75rem;
 }
+
 .quantity-controls {
     display: flex;
     align-items: center;
@@ -654,4 +655,101 @@ nav ul li a:hover {
   .product-grid {
     grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   }
+}
+
+.footer {
+  margin: 0;
+  font-family: 'Inter', sans-serif;
+  background-color: #1f2130;
+  padding: 60px 40px;
+  color: white;
+}
+
+.footer-container {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 40px;
+}
+
+.footer-column {
+  flex: 1;
+  min-width: 200px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo-icon {
+  font-size: 2rem;
+}
+
+.footer-column h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.footer-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-column ul li {
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.social-icons {
+  display: flex;
+  gap: 15px;
+}
+
+.social-icons i {
+  font-size: 18px;
+  background-color: #c3c8ff;
+  padding: 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.subscribe {
+  margin-top: 40px;
+}
+
+.subscribe h3 {
+  font-size: 20px;
+  margin-bottom: 15px;
+}
+
+.subscribe-box {
+  display: flex;
+  max-width: 700px;
+  border-radius: 10px;
+  overflow: hidden;
+  background-color: #2f3145;
+}
+
+.subscribe-box input {
+  flex: 1;
+  padding: 15px;
+  border: none;
+  outline: none;
+  background-color: transparent;
+  color: white;
+}
+
+.subscribe-box input::placeholder {
+  color: #aaa;
+}
+
+.subscribe-box button {
+  padding: 0 30px;
+  background-color: #a32705;
+  color: white;
+  border: none;
+  cursor: pointer;
 }
